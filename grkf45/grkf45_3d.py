@@ -482,7 +482,7 @@ if __name__ == "__main__":
 
 
     nw=1
-    nt=64
+    nt=1024
     nq=1
     nb = nw*nt*nq 
     sharedsize=0 #byte
@@ -568,7 +568,7 @@ if __name__ == "__main__":
     yarr1=np.array(yarr1)
     yarr2=np.array(yarr2)
 
-
+    print("END")
     cm = plt.get_cmap('magma')
     fig = plt.figure()
     ax = fig.add_subplot(121,aspect=1.0)
