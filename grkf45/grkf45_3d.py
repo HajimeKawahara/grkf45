@@ -459,8 +459,8 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     
     print("*******************************************")
-    print("GPU RKF45 solver for the following example. 1D/REGISTER y0,yp0,t,f1_0 .. f5_0")
-    print("y'=1+y*y+a sin(t), y[0]=0 on t=[0,1.4] ")
+    print("GPU RKF45 solver for the following example. 3D")
+    print("Lorenz Attractor")
     print("*******************************************")
 
     source_module=grkf45_module()
