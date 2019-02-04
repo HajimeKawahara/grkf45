@@ -10,12 +10,12 @@ http://people.sc.fsu.edu/~jburkardt/cpp_src/rkf45/rkf45.html
 - grkf45_1d (1D ODE)
 - grkf45_2d (2D ODE, the van der pol oscillator)
 
-<img src="https://github.com/HajimeKawahara/grkf45/blob/master/documents/figs/vanderpol.png" Titie="explanation" Width=200px>
+<img src="https://github.com/HajimeKawahara/grkf45/blob/master/documents/figs/vanderpol.png" Titie="explanation" Width=350px>
 
 
-- grkf45_3d (3D ODE, the Lorentz attractor)
+- grkf45_3d (3D ODE, the Lorenz attractor)
 
-<img src="https://github.com/HajimeKawahara/grkf45/blob/master/documents/figs/Lorentz.png" Titie="explanation" Width=200px>
+<img src="https://github.com/HajimeKawahara/grkf45/blob/master/documents/figs/Lorentz.png" Titie="explanation" Width=650px>
 
 
 Currently, the user needs to define the ODE in r4_f0, r4_f1, ... in GRKF45.
