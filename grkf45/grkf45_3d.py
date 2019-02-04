@@ -482,7 +482,7 @@ if __name__ == "__main__":
 
 
     nw=1
-    nt=1024
+    nt=64
     nq=1
     nb = nw*nt*nq 
     sharedsize=0 #byte
