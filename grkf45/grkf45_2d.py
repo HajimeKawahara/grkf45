@@ -143,7 +143,7 @@ def grkf45_module():
 
 
     /* GLOBAL FUNCTION */
-    __global__ void r4_rkf45 (int* flagM, float* aM, float *yM0, float *yM1, float *ypM0, float *ypM1, float tM, float toutM, float *relerr, float abserr){
+    __global__ void r4_rkf45 (int* flagM, float* aM, float *yM0, float *yM1, float tM, float toutM, float *relerr, float abserr){
 
     float ae;
     float dt;
@@ -195,9 +195,9 @@ def grkf45_module():
     t = tM;
     tout = toutM;
     y0 = yM0[ib];
-    yp0 = ypM0[ib];
     y1 = yM1[ib];
-    yp1 = ypM1[ib];
+    r4_f0 ( t, y0, y1, &yp0, a);
+    r4_f1 ( t, y0, y1, &yp1, a);
 
     
     dt = tout - t;
@@ -267,9 +267,7 @@ def grkf45_module():
     
     tM = t;
     yM0[ib] = y0;
-    ypM0[ib] = yp0;
     yM1[ib] = y1;
-    ypM1[ib] = yp1;
 
 
     flagM[ib]=4;
@@ -357,9 +355,7 @@ def grkf45_module():
 
     tM = t;
     yM0[ib] = y0;
-    ypM0[ib] = yp0;
     yM1[ib] = y1;
-    ypM1[ib] = yp1;
 
     flagM[ib]=2;
 
@@ -427,18 +423,7 @@ if __name__ == "__main__":
     y1=y1.astype(np.float32)
     dev_y1 = cuda.mem_alloc(y1.nbytes)
     cuda.memcpy_htod(dev_y1,y1)
-    
-    yp0=np.ones(nb)
-    yp0=yp0.astype(np.float32)
-    dev_yp0 = cuda.mem_alloc(yp0.nbytes)
-    cuda.memcpy_htod(dev_yp0,yp0)
-
-    yp1=np.zeros(nb)
-    yp1=yp1.astype(np.float32)
-    dev_yp1 = cuda.mem_alloc(yp1.nbytes)
-    cuda.memcpy_htod(dev_yp1,yp1)
-
-    
+        
     flag=np.zeros(nb)
     flag=flag.astype(np.int32)
     dev_flag = cuda.mem_alloc(flag.nbytes)
@@ -453,7 +438,7 @@ if __name__ == "__main__":
     for j,tnow in enumerate(t[:-1]):
         tin=tnow
         tout=t[j+1]
-        pkernel(dev_flag, dev_a,dev_y0,dev_y1,dev_yp0,dev_yp1,np.float32(tin),np.float32(tout),dev_relerr,np.float32(abserr),block=(int(nw),1,1), grid=(int(nt),int(nq)),shared=sharedsize)
+        pkernel(dev_flag, dev_a,dev_y0,dev_y1,np.float32(tin),np.float32(tout),dev_relerr,np.float32(abserr),block=(int(nw),1,1), grid=(int(nt),int(nq)),shared=sharedsize)
 
         cuda.memcpy_dtoh(y0, dev_y0)
         cuda.memcpy_dtoh(y1, dev_y1)

@@ -103,7 +103,7 @@ def grkf45_1d_module():
 
 
     /* GLOBAL FUNCTION */
-    __global__ void r4_rkf45_1d (int* flagM, float* aM, float *yM, float *ypM, float tM, float toutM, float *relerr, float abserr){
+    __global__ void r4_rkf45_1d (int* flagM, float* aM, float *yM, float tM, float toutM, float *relerr, float abserr){
 
     float ae;
     float dt;
@@ -148,8 +148,7 @@ def grkf45_1d_module():
     t = tM;
     tout = toutM;
     y0 = yM[ib];
-    yp0 = ypM[ib];
-
+    r4_f0 ( t, y0, &yp0, a);
     
     dt = tout - t;
 
@@ -211,7 +210,6 @@ def grkf45_1d_module():
     
     tM = t;
     yM[ib] = y0;
-    ypM[ib] = yp0;
     flagM[ib]=4;
 
     printf("(*_*)< t=%2.8f \\n",t);
@@ -291,7 +289,6 @@ def grkf45_1d_module():
 
     tM = t;
     yM[ib] = y0;
-    ypM[ib] = yp0;
     flagM[ib]=2;
 
     /* printf("Normal Exit N=%d\\n",nfe); */
@@ -338,7 +335,7 @@ if __name__ == "__main__":
 
 
     nw=1
-    nt=16-1
+    nt=16
     nq=1
     nb = nw*nt*nq 
     sharedsize=0 #byte
@@ -353,11 +350,6 @@ if __name__ == "__main__":
     y0=y0.astype(np.float32)
     dev_y0 = cuda.mem_alloc(y0.nbytes)
     cuda.memcpy_htod(dev_y0,y0)
-
-    yp0=np.ones(nb)
-    yp0=yp0.astype(np.float32)
-    dev_yp0 = cuda.mem_alloc(yp0.nbytes)
-    cuda.memcpy_htod(dev_yp0,yp0)
     
     flag=np.zeros(nb)
     flag=flag.astype(np.int32)
@@ -371,7 +363,7 @@ if __name__ == "__main__":
     for j,tnow in enumerate(t[:-1]):
         tin=tnow
         tout=t[j+1]
-        pkernel(dev_flag, dev_a,dev_y0,dev_yp0,np.float32(tin),np.float32(tout),dev_relerr,np.float32(abserr),block=(int(nw),1,1), grid=(int(nt),int(nq)),shared=sharedsize)
+        pkernel(dev_flag, dev_a,dev_y0, np.float32(tin),np.float32(tout),dev_relerr,np.float32(abserr),block=(int(nw),1,1), grid=(int(nt),int(nq)),shared=sharedsize)
 
         cuda.memcpy_dtoh(y0, dev_y0)
         cuda.memcpy_dtoh(flag, dev_flag)
@@ -382,3 +374,4 @@ if __name__ == "__main__":
     plt.plot(t,yarr,".",color="C0")
     plt.plot(t,yarr,alpha=0.3)
     plt.show()
+    
