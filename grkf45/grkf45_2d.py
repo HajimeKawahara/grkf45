@@ -143,7 +143,7 @@ def grkf45_module():
 
 
     /* GLOBAL FUNCTION */
-    __global__ void r4_rkf45 (int* flagM, float* aM, float *yM0, float *yM1, float tM, float toutM, float *relerr, float abserr){
+    __global__ void r4_rkf45 (int* flagM, float* aM, float *yM0, float *yM1, float tM, float toutM, float relerr, float abserr){
 
     float ae;
     float dt;
@@ -209,7 +209,7 @@ def grkf45_module():
     toln = 0.0;
 
     /* for ( k = 0; k < neqn; k++ ){ */
-    tol = (*relerr) * abs( y0 ) + abserr;
+    tol = (relerr) * abs( y0 ) + abserr;
     if ( 0.0 < tol ){
     toln = tol;
     ypk = abs( yp0 );
@@ -218,7 +218,7 @@ def grkf45_module():
     h = ( float ) pow ( ( double ) ( tol / ypk ), 0.2 );
     }}
 
-    tol = (*relerr) * abs( y1 ) + abserr;
+    tol = (relerr) * abs( y1 ) + abserr;
     if ( 0.0 < tol ){
     toln = tol;
     ypk = abs( yp1 );
@@ -243,7 +243,7 @@ def grkf45_module():
     }
 
     output = false;
-    scale = 2.0 / (*relerr);
+    scale = 2.0 / (relerr);
     ae = scale * abserr;
 
     for ( ; ; ){
@@ -390,15 +390,8 @@ if __name__ == "__main__":
     pkernel=source_module.get_function("r4_rkf45")
 
     eps=1.19209290e-07
-
-    relerr=np.array([np.sqrt(eps)])
-#    relerr=np.array([2.e-4])
-    relerr=relerr.astype(np.float32)
-    dev_relerr = cuda.mem_alloc(relerr.nbytes)
-    cuda.memcpy_htod(dev_relerr,relerr)
-
-    abserr=np.array([np.sqrt(eps)])    
-#    abserr=np.array([2.e-4])#=np.sqrt(eps)
+    relerr=np.sqrt(eps)
+    abserr=np.sqrt(eps)
     print("abserr=",abserr)
     print("relerr=",relerr)
 
@@ -438,7 +431,7 @@ if __name__ == "__main__":
     for j,tnow in enumerate(t[:-1]):
         tin=tnow
         tout=t[j+1]
-        pkernel(dev_flag, dev_a,dev_y0,dev_y1,np.float32(tin),np.float32(tout),dev_relerr,np.float32(abserr),block=(int(nw),1,1), grid=(int(nt),int(nq)),shared=sharedsize)
+        pkernel(dev_flag, dev_a,dev_y0,dev_y1,np.float32(tin),np.float32(tout),np.float32(relerr),np.float32(abserr),block=(int(nw),1,1), grid=(int(nt),int(nq)),shared=sharedsize)
 
         cuda.memcpy_dtoh(y0, dev_y0)
         cuda.memcpy_dtoh(y1, dev_y1)
