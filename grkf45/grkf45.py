@@ -450,12 +450,14 @@ def grkf45_module():
 if __name__ == "__main__":
     import numpy as np
     import matplotlib.pyplot as plt
+    import time
+    import sys
     
     print("*******************************************")
     print("GPU RKF45 solver for the following example. 3D")
     print("Lorenz Attractor")
     print("*******************************************")
-
+    tstart=time.time()
     source_module=grkf45_module()
     pkernel=source_module.get_function("r4_rkf45")
 
@@ -467,7 +469,7 @@ if __name__ == "__main__":
 
 
     nw=1
-    nt=64
+    nt=10000
     nq=1
     nb = nw*nt*nq 
     sharedsize=0 #byte
@@ -539,6 +541,10 @@ if __name__ == "__main__":
     yarr2=np.array(yarr2)
 
     print("END")
+    tend=time.time()
+    print("T=",tend-tstart)
+
+    sys.exit()
     cm = plt.get_cmap('magma')
     fig = plt.figure()
     ax = fig.add_subplot(121,aspect=1.0)
@@ -553,4 +559,3 @@ if __name__ == "__main__":
     plt.ylim(-40,40)
     plt.xlim(-10,60)
     plt.savefig("Lorentz.png")
-    plt.show()
